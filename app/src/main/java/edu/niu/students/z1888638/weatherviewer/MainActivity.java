@@ -1,20 +1,46 @@
+/**********************************************************************
+ *                                                                    *
+ * CSCI 428/524                 Assignment 1              Semester    *
+ *                                                                    *
+ * Programmer      : Mohammed Mukhtar Ali                             *
+ * Due Date & Time : The assignment is due on 2/1/2021 & time 11:59pm *
+ *                                                                    *
+ * App Name        : WeatherViewer                                    *
+ *                                                                    *
+ * Purpose : A Weather Viewer app uses free OpenWeatherMap.org REST   *
+ *           web services to obtain a specified city's 16-day weather *
+ *           forecast.                                                *
+ *                                                                    *
+ **********************************************************************/
+
+/**********************************************************************
+ * App Name: WeatherViewer                                            *
+ *                                                                    *
+ * Class Name: MainActivity                                           *
+ *                                                                    *
+ * Purpose : Class MainActivity defines the app's user interface,     *
+ * the logic for iterating with the OpenWeatherMap.org daily forecast *
+ * web service and the logic for processing the JSON response from    *
+ * the web service.                                                   *
+ *                                                                    *
+ **********************************************************************/
 package edu.niu.students.z1888638.weatherviewer;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.view.View;
-
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.ListView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,7 +57,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private List<Weather>weatherList=new ArrayList<>();
+    private List<Weather> weatherList = new ArrayList<>();
     private WeatherArrayAdapter weatherArrayAdapter;
     private ListView weatherListView;
 
@@ -40,89 +66,95 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //setSupportActionBar(toolbar);
 
-        weatherListView=(ListView)findViewById(R.id.weatherListView);
-        weatherArrayAdapter=new WeatherArrayAdapter(this,weatherList);
+        weatherListView = (ListView) findViewById(R.id.weatherListView);
+        weatherArrayAdapter = new WeatherArrayAdapter(this, weatherList);
         weatherListView.setAdapter(weatherArrayAdapter);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab =
+                (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText locationEdiText = (EditText)findViewById(R.id.locationEditText);
-                URL url = createURL(locationEdiText.getText().toString());
-                if(url!=null)
-                {
-                    dismissKeyboard(locationEdiText);
+                EditText locationEditText = (EditText) findViewById(R.id.locationEditText);
+                URL url = createURL(locationEditText.getText().toString());
+
+                if (url != null) {
+                    dismissKeyboard(locationEditText);
                     GetWeatherTask getLocalWeatherTask = new GetWeatherTask();
                     getLocalWeatherTask.execute(url);
-                }
-                else
-                {
-                    Snackbar.make(findViewById(R.id.coordinatorLayout),R.string.invalid_url,Snackbar.LENGTH_LONG).show();
+                } else {
+                    Snackbar.make(findViewById(R.id.coordinatorLayout),
+                            R.string.invalid_url, Snackbar.LENGTH_LONG).show();
                 }
             }
         });
     }
-    private void dismissKeyboard(View view)
-    {
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(),0);
+
+    private void dismissKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
-    private URL createURL(String city){
+
+    private URL createURL(String city) {
         String apiKey = getString(R.string.api_key);
-        String baseURL = getString(R.string.web_service_url);
-        try{
-            String urlString = baseURL + URLEncoder.encode(city,"UTF-8")+ "&units=metric&cnt=16&APPID=" + apiKey;
+        String baseUrl = getString(R.string.web_service_url);
+
+        try {
+            String urlString = baseUrl + URLEncoder.encode(city, "UTF-8") +
+                    "&units=metric&cnt=16&APPID=" + apiKey;
             return new URL(urlString);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
         return null;
     }
-    private class GetWeatherTask extends AsyncTask<URL,Void,JSONObject>
-    {
 
+    private class GetWeatherTask
+            extends AsyncTask<URL, Void, JSONObject> {
 
         @Override
         protected JSONObject doInBackground(URL... params) {
+            Bitmap bitmap = null;
             HttpURLConnection connection = null;
-            try{
+
+            try {
                 connection = (HttpURLConnection) params[0].openConnection();
                 int response = connection.getResponseCode();
-                if(response==HttpURLConnection.HTTP_OK)
-                {
+
+                if (response == HttpURLConnection.HTTP_OK) {
                     StringBuilder builder = new StringBuilder();
-                    try(BufferedReader reader = new BufferedReader(
-                            new InputStreamReader(connection.getInputStream()))){
+
+                    try (BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(connection.getInputStream()))) {
+
                         String line;
-                        while((line = reader.readLine())!=null)
-                        {
+
+                        while ((line = reader.readLine()) != null) {
                             builder.append(line);
                         }
-                    }
-                    catch (IOException e){
+                    } catch (IOException e) {
                         Snackbar.make(findViewById(R.id.coordinatorLayout),
-                                R.string.read_error,Snackbar.LENGTH_LONG).show();
+                                R.string.read_error, Snackbar.LENGTH_LONG).show();
                         e.printStackTrace();
                     }
+
                     return new JSONObject(builder.toString());
-                }
-                else{
+                } else {
                     Snackbar.make(findViewById(R.id.coordinatorLayout),
-                            R.string.connect_error,Snackbar.LENGTH_LONG).show();
+                            R.string.connect_error, Snackbar.LENGTH_LONG).show();
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Snackbar.make(findViewById(R.id.coordinatorLayout),
-                        R.string.connect_error,Snackbar.LENGTH_LONG).show();
+                        R.string.connect_error, Snackbar.LENGTH_LONG).show();
                 e.printStackTrace();
-            }
-            finally {
+            } finally {
                 connection.disconnect();
             }
+
             return null;
         }
 
@@ -137,12 +169,14 @@ public class MainActivity extends AppCompatActivity {
     private void convertJSONtoArrayList(JSONObject forecast) {
         weatherList.clear();
 
-        try{
+        try {
             JSONArray list = forecast.getJSONArray("list");
 
-            for(int i= 0; i<list.length();++i){
+            for (int i = 0; i < list.length(); ++i) {
                 JSONObject day = list.getJSONObject(i);
+
                 JSONObject temperatures = day.getJSONObject("temp");
+
                 JSONObject weather = day.getJSONArray("weather").getJSONObject(0);
 
                 weatherList.add(new Weather(
@@ -153,8 +187,7 @@ public class MainActivity extends AppCompatActivity {
                         weather.getString("description"),
                         weather.getString("icon")));
             }
-        }
-        catch (JSONException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
