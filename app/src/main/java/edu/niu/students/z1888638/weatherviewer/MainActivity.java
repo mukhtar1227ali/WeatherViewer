@@ -1,29 +1,4 @@
-/**********************************************************************
- *                                                                    *
- * CSCI 428/524                 Assignment 1              Semester    *
- *                                                                    *
- * Programmer      : Mohammed Mukhtar Ali                             *
- * Due Date & Time : The assignment is due on 2/1/2021 & time 11:59pm *
- *                                                                    *
- * App Name        : WeatherViewer                                    *
- *                                                                    *
- * Purpose : A Weather Viewer app uses free OpenWeatherMap.org REST   *
- *           web services to obtain a specified city's 16-day weather *
- *           forecast.                                                *
- *                                                                    *
- **********************************************************************/
 
-/**********************************************************************
- * App Name: WeatherViewer                                            *
- *                                                                    *
- * Class Name: MainActivity                                           *
- *                                                                    *
- * Purpose : Class MainActivity defines the app's user interface,     *
- * the logic for iterating with the OpenWeatherMap.org daily forecast *
- * web service and the logic for processing the JSON response from    *
- * the web service.                                                   *
- *                                                                    *
- **********************************************************************/
 package edu.niu.students.z1888638.weatherviewer;
 
 import android.content.Context;

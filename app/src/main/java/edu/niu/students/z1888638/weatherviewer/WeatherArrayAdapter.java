@@ -1,12 +1,3 @@
-/**********************************************************************
- * App Name: WeatherViewer                                            *
- *                                                                    *
- * Class Name: WeatherArrayAdapter                                    *
- *                                                                    *
- * Purpose : This is a subclass of ArrayAdapter for binding for       *
- * an ArrayList<Weather> to the MainActivity's ListView               *
- *                                                                    *
- **********************************************************************/
 
 package edu.niu.students.z1888638.weatherviewer;
 

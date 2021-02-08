@@ -1,11 +1,3 @@
-/**********************************************************************
- * App Name: WeatherViewer                                            *
- *                                                                    *
- * Class Name: Weather                                                *
- *                                                                    *
- * Purpose : Class Weather represents one day's weather data          *
- *                                                                    *
- **********************************************************************/
 
 package edu.niu.students.z1888638.weatherviewer;
 
